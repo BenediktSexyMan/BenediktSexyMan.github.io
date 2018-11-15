@@ -1,14 +1,264 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Don't Eat My Apples</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
+	<head>
+		<style type="text/css">
+			@import url('https://fonts.googleapis.com/css?family=Lato');
+			body {
+				margin: 0px;
+				background-color: orange !important;
+				font-family: 'Lato', sans-serif;
+			}
+			#imgList {
+				display: flex;
+				flex-flow: row wrap;
+				margin-bottom: 5em;
+			}
 
-  <body>
-    <canvas></canvas>
-	<h1></h1>
-    <script src="main2.js"></script>
-  </body>
+			.image {
+				margin-left: 10%;
+				margin-top: 5em;
+				height: 16em;
+				background-color: aquamarine;
+			}
+
+			h3 {
+				text-align: center;
+				color: orange;
+				width: 100%;
+				word-spacing: 1em;
+			}
+
+			#searchParent {
+				margin-top: 3em;
+				display: flex;
+				justify-content: center;
+			}
+
+			#searchBar {
+				all: unset;
+				width: 35em;
+				height: 2.3em;
+				border: 0.2em darkorange solid;
+				border-radius: 1.5em;
+				background-color: azure;
+				text-indent: 1em;
+			}
+
+			#buttons {
+				margin-top: 2em;
+				display: flex;
+				justify-content: center;
+				-webkit-user-select: none;
+     			-moz-user-select: none;
+                -ms-user-select: none;
+            	user-select: none;
+			}
+
+			.button {
+				display: flex;
+				flex-flow: column;
+			}
+
+			.checkParent {
+				display: flex;
+				flex-flow: row;
+				justify-content: center;
+			}
+
+			.checkBody {
+				width: 5em;
+				padding: 0.1em;
+				background-color: aquamarine;
+				border: 0.2em darkorange solid;
+			}
+
+			label {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+
+		
+		<div id="searchParent">
+			<input id="searchBar" type="search">
+		</div>
+		<div id="buttons">
+			<div class="button">
+				<label for="showall">
+					<div class="checkBody">
+						Show All
+						<div class="checkParent">
+							<input id="showall" type="checkbox" checked onchange="filtered()">
+						</div>
+					</div>
+				</label>
+			</div>
+		</div>
+		<div id="imgList"></div>
+
+		<script type="text/javascript">
+			class imageInfo {
+				constructor(name="", tags=[], loc="", w=300, h=150) {
+					this.name = name;
+					this.tags = tags;
+					this.loc  = loc;
+					this.w    = w;
+					this.h    = h;
+					this.img  = new Image(w, h);
+					this.img.src = loc;
+					this.img.className = tags.join(" ");
+					this.img.setAttribute("alt", name);
+
+				}
+			}
+			let images = [
+				new imageInfo(
+					"rabbit",
+					[
+						"rabbit",
+						"bunny",
+						"cute",
+						"textured",
+						"nature",
+						"art",
+					],
+					"http://javascriptbook.com/code/c12/img/p1.jpg"
+				),
+				new imageInfo(
+					"sea",
+					[
+						"sea",
+						"horizon",
+						"nature",
+						"photo"
+					],
+					"http://javascriptbook.com/code/c12/img/p2.jpg"
+				),
+				new imageInfo(
+					"deer",
+					[
+						"deer",
+						"cute",
+						"grayscale",
+						"nature",
+						"photo"
+					],
+					"http://javascriptbook.com/code/c12/img/p3.jpg"
+				),
+				new imageInfo(
+					"new york street map",
+					[
+						"new",
+						"york",
+						"street",
+						"map",
+						"grayscale"
+					],
+					"http://javascriptbook.com/code/c12/img/p4.jpg"
+				),
+				new imageInfo(
+					"trumpet player",
+					[
+						"trumpet",
+						"player",
+						"grayscale",
+						"passion",
+						"photo"
+					],
+					"http://javascriptbook.com/code/c12/img/p5.jpg"
+				),
+				new imageInfo(
+					"typographic study",
+					[
+						"typographic",
+						"study",
+						"grayscale",
+						"line",
+						"art"
+					],
+					"http://javascriptbook.com/code/c12/img/p6.jpg"
+				),
+				new imageInfo(
+					"bicycle japan",
+					[
+						"bicycle",
+						"japan",
+						"photo"
+					],
+					"http://javascriptbook.com/code/c12/img/p7.jpg"
+				),
+				new imageInfo(
+					"aqua logo",
+					[
+						"aqua",
+						"logo",
+						"art"
+					],
+					"http://javascriptbook.com/code/c12/img/p8.jpg"
+				),
+				new imageInfo(
+					"ghost",
+					[
+						"ghost",
+						"art",
+						"textured",
+						"cute"
+					],
+					"http://javascriptbook.com/code/c12/img/p9.jpg"
+				)
+			];
+
+			let categories = [
+				"art",
+				"textured",
+				"grayscale",
+				"photo",
+				"nature",
+				"cute"
+			];
+
+			categories.forEach(function(elem){
+				let div = document.createElement("div");
+				div.className = "button";
+				div.innerHTML = `<label for="${elem}"><div class="checkBody">${elem.charAt(0).toUpperCase() + elem.slice(1)}<div class="checkParent"><input id="${elem}" type="checkbox"></div></label></div>`;
+				buttons.appendChild(div);
+				div.addEventListener("change", filtered);
+			});
+
+			function displayImages(imgs) {
+				imgList.innerHTML = "";
+				let i = 0;
+				imgs.forEach(function(elem){
+					let div = document.createElement("div");
+					div.appendChild(elem.img);
+					div.innerHTML += `<div style="width:${elem.w}px"><h3>${elem.tags.join(" ")}</h3></div>`;
+					div.className = "image";
+					imgList.appendChild(div);
+				});
+			}
+
+			function search() {
+				let val = this.value;
+				let imgs = images;
+				imgs = imgs.filter(function(elem){
+					return elem.tags.join(" ").includes(val.toLowerCase()) && (showall.checked || Array.from(document.querySelectorAll("input")).some(i=> elem.tags.includes(i.id) && i.checked));
+				});
+				displayImages(imgs);
+			}
+
+			function filtered() {
+				let val = this.value;
+				let imgs = images;
+				imgs = imgs.filter(function(elem){
+					return elem.tags.join(" ").includes(searchBar.value.toLowerCase()) && (showall.checked || Array.from(document.querySelectorAll("input")).some(i=> elem.tags.includes(i.id) && i.checked));
+				});
+				displayImages(imgs);
+			}
+
+			displayImages(images);
+			searchBar.addEventListener("change", search);
+			searchBar.addEventListener("keyup", search);
+		</script>
+	</body>
 </html>
